@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.durgasodt.beans.Student;
+import com.durgasoft.factory.ConnectionFactory;
+import com.durgasoft.factory.StudentServiceFactory;
 import com.durgasoft.services.StudentService;
 import java.util.List;
 
@@ -20,10 +22,18 @@ import java.util.List;
 /**
  * Servlet implementation class AddServlet
  */
-@WebServlet("/add")
+@WebServlet(urlPatterns= {"/add"},loadOnStartup=1)
 public class AddServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+      @Override
+      public void init() throws ServletException{
+    	  try {
+    		  Class.forName("com.durgasoft.factory.ConnectionFactory");
+    	  }
+    	  catch (Exception e) {
+    		  e.printStackTrace();
+    	  }
+      }
    
 
 	
@@ -39,7 +49,8 @@ public class AddServlet extends HttpServlet {
 			std.setSname(sname);
 			std.setSaddr(saddr);
 			
-			StudentService stdService=new StudentService();
+			
+			StudentServices stdService = StudentServiceFactory.getStudentService();
 			stdService.addStudent(std);
 			
 			
@@ -60,9 +71,15 @@ public class AddServlet extends HttpServlet {
 			out.println("</table></body></html>");
 			RequestDispatcher rd=request.getRequestDispatcher("/AddForm.html");
 			rd.include(request, response);
-			} catch (Exception e) {
+			} 
+		catch (Exception e) {
 			e.printStackTrace();
 			}
+	}
+		@Override
+		public void destroy() {
+			ConnectionFactory.cleanUp();
+		}
 			}
-			}
+			
 

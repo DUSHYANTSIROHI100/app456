@@ -7,26 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.durgasodt.beans.Student;
+import com.durgasoft.factory.ConnectionFactory;
+import com.durgasoft.servlets.StudentServices;
 
 
 
-public class StudentService {
+public class StudentService implements StudentServices {
 
-	Connection con;
-	Statement st;
-	ResultSet rs;
-
-	public StudentService(){
-	try {
-	Class.forName("oracle.jdbc.driver.OracleDriver");
-	con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "xe", "123");
-	st=con.createStatement();
-	} catch (Exception e) {
-	e.printStackTrace();
-	}
-	}
+	
 	public void addStudent(Student std){
 	try {
+		Connection con=ConnectionFactory.getConnection();
+		Statement st= con.createStatement();
 	st.executeUpdate("insert into student values('"+std.getSid()+"','"+std.getSname()+"','"+std.getSaddr()+"')");
 	} catch (Exception e) {
 	e.printStackTrace();
@@ -35,7 +27,9 @@ public class StudentService {
 	public List<Student> getAllStudent(){
 		List<Student> stdList=null;
 	try {
-	rs=st.executeQuery("select * from student");
+		Connection con=ConnectionFactory.getConnection();
+		Statement st= con.createStatement();
+	ResultSet rs=st.executeQuery("select * from student");
 	stdList = new ArrayList<Student>();
 	while(rs.next()){
 	Student std=new Student();
